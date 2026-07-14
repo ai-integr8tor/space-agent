@@ -1500,7 +1500,10 @@
 
     if (tagName === "CODE") {
       const content = normalizeText(node.textContent || "");
-      return content ? `\`${content.replace(/`/gu, "\\`")}\`` : "";
+      const escapedContent = content
+        .replace(/\\/gu, "\\\\")
+        .replace(/`/gu, "\\`");
+      return content ? `\`${escapedContent}\`` : "";
     }
 
     return renderInlineChildren(node, context);
