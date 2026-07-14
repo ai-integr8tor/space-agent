@@ -12,15 +12,22 @@ import {
   unwrapUserCryptoMasterKey
 } from "../server/pages/res/user-crypto.js";
 
+const MIN_PBKDF2_ITERATIONS = 310000;
+
 function buildAuthMessage({ challengeToken, clientNonce, serverNonce, username }) {
   return ["space-login-v1", username, clientNonce, serverNonce, challengeToken].join(":");
 }
 
 function createClientProof({ challenge, clientNonce, password, username }) {
+  const parsedIterations = Number(challenge.iterations);
+  if (!Number.isInteger(parsedIterations) || parsedIterations < MIN_PBKDF2_ITERATIONS) {
+    throw new Error(`Invalid challenge iterations: ${challenge.iterations}`);
+  }
+
   const saltedPassword = pbkdf2Sync(
     password,
     Buffer.from(String(challenge.salt || ""), "base64url"),
-    Number(challenge.iterations),
+    parsedIterations,
     32,
     "sha256"
   );
