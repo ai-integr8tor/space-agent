@@ -1949,7 +1949,7 @@ function installBrowserDomHelper(flagKey = DOM_HELPER_FLAG, helperKey = DOM_HELP
         }, "*");
       })
       .catch((error) => {
-        console.error(`[space-browser/dom-helper] Request "${rawMessage.type}" failed.`, error);
+        console.error('[space-browser/dom-helper] Request "%s" failed.', rawMessage.type, error);
         event.source.postMessage({
           channel,
           ok: false,
