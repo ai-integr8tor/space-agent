@@ -106,11 +106,27 @@ function createRandomString(length, alphabet) {
     return "";
   }
 
-  const bytes = randomBytes(normalizedLength);
+  const alphabetLength = sourceAlphabet.length;
+
+  if (alphabetLength <= 0) {
+    return "";
+  }
+
+  const maxUnbiasedByte = Math.floor(256 / alphabetLength) * alphabetLength;
   let output = "";
 
-  for (let index = 0; index < normalizedLength; index += 1) {
-    output += sourceAlphabet[bytes[index] % sourceAlphabet.length];
+  while (output.length < normalizedLength) {
+    const bytes = randomBytes(normalizedLength - output.length);
+
+    for (let index = 0; index < bytes.length && output.length < normalizedLength; index += 1) {
+      const value = bytes[index];
+
+      if (value >= maxUnbiasedByte) {
+        continue;
+      }
+
+      output += sourceAlphabet[value % alphabetLength];
+    }
   }
 
   return output;
