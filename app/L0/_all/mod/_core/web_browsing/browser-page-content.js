@@ -331,11 +331,22 @@
   }
 
   function cleanReadableMarkdown(value) {
-    const lines = String(value || "")
-      .replace(/<style\\?>[\s\S]*?<\/style\\?>/giu, "")
-      .replace(/<script\\?>[\s\S]*?<\/script\\?>/giu, "")
-      .replace(/<space\\-browser\\-(?:frame\\-document|shadow\\-root)\b[\s\S]*?<\/space\\-browser\\-(?:frame\\-document|shadow\\-root)>/giu, "")
-      .split("\n");
+    let sanitized = String(value || "");
+    let previous;
+
+    do {
+      previous = sanitized;
+      sanitized = sanitized
+        .replace(/<style\\?>[\s\S]*?<\/style\\?>/giu, "")
+        .replace(/<script\\?>[\s\S]*?<\/script\\?>/giu, "")
+        .replace(/<space\\-browser\\-(?:frame\\-document|shadow\\-root)\b[\s\S]*?<\/space\\-browser\\-(?:frame\\-document|shadow\\-root)>/giu, "");
+    } while (sanitized !== previous);
+
+    sanitized = sanitized
+      .replace(/</gu, "&lt;")
+      .replace(/>/gu, "&gt;");
+
+    const lines = sanitized.split("\n");
 
     const filteredLines = [];
     let insideCodeFence = false;
