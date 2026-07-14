@@ -34,11 +34,21 @@ function createRandomString(length, alphabet) {
     return "";
   }
 
-  const bytes = randomBytes(normalizedLength);
+  const alphabetLength = sourceAlphabet.length;
+  const maxUnbiasedByte = Math.floor(256 / alphabetLength) * alphabetLength;
   let output = "";
 
-  for (let index = 0; index < normalizedLength; index += 1) {
-    output += sourceAlphabet[bytes[index] % sourceAlphabet.length];
+  while (output.length < normalizedLength) {
+    const remaining = normalizedLength - output.length;
+    const bytes = randomBytes(remaining);
+
+    for (let index = 0; index < bytes.length && output.length < normalizedLength; index += 1) {
+      const value = bytes[index];
+      if (value >= maxUnbiasedByte) {
+        continue;
+      }
+      output += sourceAlphabet[value % alphabetLength];
+    }
   }
 
   return output;
